@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RemoveAsserts = exports.ApplyNoNewLineAfter = exports.beautify3 = exports.beautifySemicolonBlock = exports.beautifyVariableInitialiseBlock = exports.beautifyPackageIsNewBlock = exports.beautifyComponentBlock = exports.beautifyCaseBlock = exports.AlignSign = exports.AlignSigns = exports.beautifyPortGenericBlock = exports.FormattedLineToString = exports.CodeBlock = exports.FormattedLine = exports.beautify = exports.BeautifierSettings = exports.signAlignSettings = exports.SetNewLinesAfterSymbols = exports.NewLineSettings = void 0;
 let isTesting = false;
-const ILEscape = "@@";
+const ILEscape = "@_@";
 const ILCommentPrefix = ILEscape + "comments";
 const ILIndentedReturnPrefix = ILEscape;
 const ILQuote = "⨵";
@@ -285,8 +285,8 @@ function beautify(input, settings) {
     RemoveLeadingWhitespaces(arr);
     input = arr.join("\r\n");
     if (settings.RemoveComments) {
-        input = input.replace(/\r\n[ \t]*@@comments[0-9]+[ \t]*\r\n/g, '\r\n');
-        input = input.replace(/@@comments[0-9]+/g, '');
+        input = input.replace(/\r\n[ \t]*@_@comments[0-9]+[ \t]*\r\n/g, '\r\n');
+        input = input.replace(/@_@comments[0-9]+/g, '');
         comments = [];
     }
     input = SetKeywordCase(input, "uppercase", KeyWords);
@@ -311,7 +311,7 @@ function beautify(input, settings) {
         ApplyNoNewLineAfter(arr, newLineSettings.noNewLineAfter);
         input = arr.join("\r\n");
     }
-    input = input.replace(/([a-zA-Z0-9\); ])\);(@@comments[0-9]+)?@@end/g, '$1\r\n);$2@@end');
+    input = input.replace(/([a-zA-Z0-9\); ])\);(@_@comments[0-9]+)?@_@end/g, '$1\r\n);$2@_@end');
     input = input.replace(/[ ]?([&=:\-\+|\*]|[<>]+)[ ]?/g, ' $1 ');
     input = input.replace(/(\d+e) +([+\-]) +(\d+)/g, '$1$2$3'); // fix exponential notation format broken by previous step
     input = input.replace(/[ ]?([,])[ ]?/g, '$1 ');
@@ -324,15 +324,18 @@ function beautify(input, settings) {
     //input = input.replace(/\r\n[ \t]+--\r\n/g, "\r\n");
     input = input.replace(/[ ]+/g, ' ');
     input = input.replace(/[ \t]+\r\n/g, "\r\n");
-    input = input.replace(/\r\n\r\n\r\n/g, '\r\n');
+    input = input.replace(/\r\n\r\n(?:\r\n)+/g, '\r\n\r\n');
     input = input.replace(/[\r\n\s]+$/g, '');
     input = input.replace(/[ \t]+\)/g, ')');
     input = input.replace(/\s*\)\s+RETURN\s+([\w]+;)/g, '\r\n) RETURN $1'); //function(..)\r\nreturn type; -> function(..\r\n)return type;
-    input = input.replace(/\)\s*(@@\w+)\r\n\s*RETURN\s+([\w]+;)/g, ') $1\r\n' + ILIndentedReturnPrefix + 'RETURN $2'); //function(..)\r\nreturn type; -> function(..\r\n)return type;
-    let keywordAndSignRegex = new RegExp("(\\b" + KeyWords.join("\\b|\\b") + "\\b) +([\\-+]) +(\\w)", "g");
+    input = input.replace(/\)\s*(@_@\w+)\r\n\s*RETURN\s+([\w]+;)/g, ') $1\r\n' + ILIndentedReturnPrefix + 'RETURN $2'); //function(..)\r\nreturn type; -> function(..\r\n)return type;
+    let keywordAndSignRegex = new RegExp("(\\b" + KeyWords.join("\\b|\\b") + "\\b) +([\\-+]) +([\\(\\w])", "g");
     input = input.replace(keywordAndSignRegex, "$1 $2$3"); // `WHEN - 2` -> `WHEN -2`
-    input = input.replace(/([,|]) +([+\-]) +(\w)/g, '$1 $2$3'); // `1, - 2)` -> `1, -2)`
-    input = input.replace(/(\() +([+\-]) +(\w)/g, '$1$2$3'); // `( - 2)` -> `(-2)`
+    input = input.replace(/([,|>=<]) +([+\-]) +([\(\w])/g, '$1 $2$3'); // `1, - 2)` -> `1, -2)`
+    input = input.replace(/(\() +([+\-]) +([\(\w])/g, '$1$2$3'); // `( - 2)` -> `(-2)`
+    input = input.replace(/(\|) ([-=])/g, '$1$2'); // `| ->` -> `|->`
+    input = input.replace(/\)RETURN/g, ') RETURN'); // `)return` -> `) return`
+    input = input.replace(/(FUNCTION )(\w+)\s+\(/g, '$1$2(');
     arr = input.split("\r\n");
     let result = [];
     let block = new CodeBlock(arr);
@@ -343,7 +346,7 @@ function beautify(input, settings) {
     }
     arr = FormattedLineToString(result, settings.Indentation);
     input = arr.join("\r\n");
-    input = input.replace(/@@RETURN/g, "RETURN");
+    input = input.replace(/@_@RETURN/g, "RETURN");
     input = SetKeywordCase(input, settings.KeywordCase, KeyWords);
     input = SetKeywordCase(input, settings.TypeNameCase, TypeNames);
     input = replaceEscapedWords(input, quotes, ILQuote);
@@ -351,7 +354,7 @@ function beautify(input, settings) {
     input = replaceEscapedComments(input, comments, ILCommentPrefix);
     input = replaceEscapedWords(input, backslashes, ILBackslash);
     input = input.replace(new RegExp(ILSemicolon, "g"), ";");
-    input = input.replace(/@@[a-z]+/g, "");
+    input = input.replace(/@_@[a-z]+/g, "");
     var escapedTexts = new RegExp("[" + ILBackslash + ILQuote + ILSingleQuote + "]", "g");
     input = input.replace(escapedTexts, "");
     input = input.replace(/\r\n/g, settings.EndOfLine);
@@ -517,9 +520,10 @@ function AlignSigns(result, startIndex, endIndex, mode, alignComments = false) {
     AlignSign_(result, startIndex, endIndex, ":=", mode);
     AlignSign_(result, startIndex, endIndex, "<=", mode);
     AlignSign_(result, startIndex, endIndex, "=>", mode);
+    AlignSign_(result, startIndex, endIndex, "<=", mode); // Another pass to align when a => b <= c
     AlignSign_(result, startIndex, endIndex, "direction", mode);
     if (alignComments) {
-        AlignSign_(result, startIndex, endIndex, "@@comments", mode);
+        AlignSign_(result, startIndex, endIndex, "@_@comments", mode);
     }
 }
 exports.AlignSigns = AlignSigns;
@@ -546,8 +550,10 @@ function AlignSign_(result, startIndex, endIndex, symbol, mode) {
     ];
     let labelAndKeywordsStr = labelAndKeywords.join("|");
     let labelAndKeywordsRegex = new RegExp("(" + labelAndKeywordsStr + ")([^\\w]|$)");
+    let prevIndent = 0;
     for (let i = startIndex; i <= endIndex; i++) {
         let line = result[i].Line;
+        let indent = result[i].Indent;
         if (symbol == ":" && line.regexStartsWith(labelAndKeywordsRegex)) {
             continue;
         }
@@ -556,10 +562,7 @@ function AlignSign_(result, startIndex, endIndex, symbol, mode) {
             regex = new RegExp("(:\\s*)(IN|OUT|INOUT|BUFFER)(\\s+)(\\w)");
         }
         else {
-            regex = new RegExp("([\\s\\w\\\\]|^)" + symbol + "([\\s\\w\\\\]|$)");
-        }
-        if (line.regexCount(regex) > 1) {
-            continue;
+            regex = new RegExp("([\\s\\w\\\\\\(\\)]|^)" + symbol + "([\\s\\w\\\\\\(\\)]|$)");
         }
         let colonIndex;
         if (symbol == "direction") {
@@ -568,7 +571,20 @@ function AlignSign_(result, startIndex, endIndex, symbol, mode) {
         else {
             colonIndex = line.regexIndexOf(regex);
         }
-        if (colonIndex > 0) {
+        if (indent != prevIndent && mode == "local") {
+            if (startLine < i - 1) // if cannot find the symbol, a block of symbols ends
+             {
+                AlignSign(result, startLine, i - 1, symbol, maxSymbolIndex, symbolIndices);
+            }
+            maxSymbolIndex = -1;
+            symbolIndices = {};
+            startLine = i;
+            if (colonIndex > 0) {
+                maxSymbolIndex = Math.max(maxSymbolIndex, colonIndex);
+                symbolIndices[i] = colonIndex;
+            }
+        }
+        else if (colonIndex > 0) {
             maxSymbolIndex = Math.max(maxSymbolIndex, colonIndex);
             symbolIndices[i] = colonIndex;
         }
@@ -582,6 +598,7 @@ function AlignSign_(result, startIndex, endIndex, symbol, mode) {
             symbolIndices = {};
             startLine = i;
         }
+        prevIndent = indent;
     }
     if (startLine < endIndex) // if cannot find the symbol, a block of symbols ends
      {
@@ -691,7 +708,7 @@ function beautifySemicolonBlock(block, result, settings, indent) {
 exports.beautifySemicolonBlock = beautifySemicolonBlock;
 function alignSignalAssignmentBlock(settings, inputs, startIndex, endIndex, result) {
     if (settings.Indentation.replace(/ +/g, "").length == 0) {
-        let reg = new RegExp("^([\\w\\\\]+[\\s]*<=\\s*)");
+        let reg = new RegExp("^([\\w\\\\\\(\\)]+[\\s]*(?:<=|:=)\\s*)");
         let match = reg.exec(inputs[startIndex]);
         if (match != null) {
             let length = match[0].length;
@@ -733,8 +750,8 @@ function beautify3(block, result, settings, indent) {
     let indentedEndsKeyWords = [ILIndentedReturnPrefix + "RETURN\\s+\\w+;"];
     let blockEndsWithSemicolon = [
         "(WITH\\s+[\\w\\s\\\\]+SELECT)",
-        "([\\w\\\\]+[\\s]*<=)",
-        "([\\w\\\\]+[\\s]*:=)",
+        "([\\w\\\\\\\(\\)]+[\\s]*<=)",
+        "([\\w\\\\\\(\\)]+[\\s]*:=)",
         "FOR\\s+[\\w\\s,]+:\\s*\\w+\\s+USE",
         "REPORT"
     ];
@@ -776,7 +793,7 @@ function beautify3(block, result, settings, indent) {
             let startIndex = block.cursor;
             beautifySemicolonBlock(block, result, settings, indent);
             if (endsWithBracket && startIndex != block.cursor) {
-                let fl = result[block.end];
+                let fl = result[block.cursor];
                 if (fl.Line.regexStartsWith(/\);$/)) {
                     fl.Indent--;
                 }
@@ -784,14 +801,14 @@ function beautify3(block, result, settings, indent) {
             Mode = modeCache;
             continue;
         }
-        if (input.regexIndexOf(/:=(\s*@@comments\d+\s*)?$/) > 0) {
+        if (input.regexIndexOf(/:=(\s*@_@comments\d+\s*)?$/) > 0) {
             let modeCache = Mode;
             Mode = FormatMode.EndsWithSemicolon;
             beautifySemicolonBlock(block, result, settings, indent);
             Mode = modeCache;
             continue;
         }
-        if (input.regexStartsWith(/\w+\s*:\s*ENTITY/)) {
+        if (input.regexStartsWith(/\w+\s*:\s*(ENTITY|COMPONENT)/)) {
             let modeCache = Mode;
             Mode = FormatMode.EndsWithSemicolon;
             beautifySemicolonBlock(block, result, settings, indent);
@@ -912,7 +929,7 @@ function ApplyNoNewLineAfter(arr, noNewLineAfter) {
         noNewLineAfter.forEach(n => {
             let regex = new RegExp("(" + n.toUpperCase + ")[ a-z0-9]+[a-z0-9]+");
             if (arr[i].regexIndexOf(regex) >= 0) {
-                arr[i] += "@@singleline";
+                arr[i] += "@_@singleline";
             }
         });
     }
@@ -961,7 +978,7 @@ function escapeText(arr, regex, escapedChar) {
 function RemoveExtraNewLines(input) {
     input = input.replace(/(?:\r\n|\r|\n)/g, '\r\n');
     input = input.replace(/ \r\n/g, '\r\n');
-    input = input.replace(/\r\n\r\n\r\n/g, '\r\n');
+    input = input.replace(/\r\n\r\n(?:\r\n)+/g, '\r\n\r\n');
     return input;
 }
 //# sourceMappingURL=VHDLFormatter.js.map
