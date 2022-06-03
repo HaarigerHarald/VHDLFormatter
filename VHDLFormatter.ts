@@ -827,7 +827,6 @@ export function beautify3(block: CodeBlock, result: (FormattedLine | FormattedLi
         "FOR",
         "WHILE",
         "LOOP",
-        "(.*\\s*GENERATE)",
         "(CONTEXT[\\w\\s\\\\]+IS)",
         "(CONFIGURATION(?!.+;))",
         "BLOCK",

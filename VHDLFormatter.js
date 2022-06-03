@@ -739,7 +739,6 @@ function beautify3(block, result, settings, indent) {
         "FOR",
         "WHILE",
         "LOOP",
-        "(.*\\s*GENERATE)",
         "(CONTEXT[\\w\\s\\\\]+IS)",
         "(CONFIGURATION(?!.+;))",
         "BLOCK",
