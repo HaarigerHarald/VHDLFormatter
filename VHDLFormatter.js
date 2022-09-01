@@ -333,6 +333,7 @@ function beautify(input, settings) {
     input = input.replace(keywordAndSignRegex, "$1 $2$3"); // `WHEN - 2` -> `WHEN -2`
     input = input.replace(/([,|>=<]) +([+\-]) +([\(\w])/g, '$1 $2$3'); // `1, - 2)` -> `1, -2)`
     input = input.replace(/(\() +([+\-]) +([\(\w])/g, '$1$2$3'); // `( - 2)` -> `(-2)`
+    input = input.replace(/(\*) +([+\-]) +([\(\w])/g, '$1 $2$3'); // `* - 2` -> `* -2`
     input = input.replace(/(\|) ([-=])/g, '$1$2'); // `| ->` -> `|->`
     input = input.replace(/\)RETURN/g, ') RETURN'); // `)return` -> `) return`
     input = input.replace(/(FUNCTION )(\w+)\s+\(/g, '$1$2(');
