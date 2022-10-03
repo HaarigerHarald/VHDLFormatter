@@ -796,7 +796,7 @@ export function beautifySemicolonBlock(block: CodeBlock, result: (FormattedLine 
 
 function alignSignalAssignmentBlock(settings: BeautifierSettings, inputs: string[], startIndex: number, endIndex: number, result: (FormattedLine | FormattedLine[])[]) {
     if (settings.Indentation.replace(/ +/g, "").length == 0) {
-        let reg: RegExp = new RegExp("^([\\w\\\\\\(\\)'(?:,\\s*)]+[\\s]*(?:<=|:=)\\s*)");
+        let reg: RegExp = new RegExp("^([\\w\\\\\\(\\)\\+\\-'(?:,\\s*)]+[\\s]*(?:<=|:=)\\s*)");
         let match = reg.exec(inputs[startIndex]);
         if (match != null) {
             let length = match[0].length;
@@ -837,8 +837,8 @@ export function beautify3(block: CodeBlock, result: (FormattedLine | FormattedLi
     let indentedEndsKeyWords: Array<string> = [ILIndentedReturnPrefix + "RETURN\\s+\\w+;"];
     let blockEndsWithSemicolon: Array<string> = [
         "(WITH\\s+[\\w\\s\\\\]+SELECT)",
-        "([\\w\\\\\\\(\\)'(?:,\\s*)]+[\\s]*<=)",
-        "([\\w\\\\\\(\\)'(?:,\\s*)]+[\\s]*:=)",
+        "([\\w\\\\\\\(\\)\\+\\-'(?:,\\s*)]+[\\s]*<=)",
+        "([\\w\\\\\\(\\)\\+\\-'(?:,\\s*)]+[\\s]*:=)",
         "FOR\\s+[\\w\\s,]+:\\s*\\w+\\s+USE",
         "REPORT"
     ];
