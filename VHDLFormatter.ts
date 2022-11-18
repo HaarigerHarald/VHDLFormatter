@@ -837,7 +837,7 @@ export function beautify3(block: CodeBlock, result: (FormattedLine | FormattedLi
     let indentedEndsKeyWords: Array<string> = [ILIndentedReturnPrefix + "RETURN\\s+\\w+;"];
     let blockEndsWithSemicolon: Array<string> = [
         "(WITH\\s+[\\w\\s\\\\]+SELECT)",
-        "([\\w\\\\\\\(\\)\\+\\-'(?:,\\s*)]+[\\s]*<=)",
+        "([\\w\\\\\\\(\\)\\+\\-'(?:,\\s*)]+[\\s]*<=(?!.*\\s(THEN|GENERATE)(\\s|$)))",
         "([\\w\\\\\\(\\)\\+\\-'(?:,\\s*)]+[\\s]*:=)",
         "FOR\\s+[\\w\\s,]+:\\s*\\w+\\s+USE",
         "REPORT"

@@ -750,7 +750,7 @@ function beautify3(block, result, settings, indent) {
     let indentedEndsKeyWords = [ILIndentedReturnPrefix + "RETURN\\s+\\w+;"];
     let blockEndsWithSemicolon = [
         "(WITH\\s+[\\w\\s\\\\]+SELECT)",
-        "([\\w\\\\\\\(\\)\\+\\-'(?:,\\s*)]+[\\s]*<=)",
+        "([\\w\\\\\\\(\\)\\+\\-'(?:,\\s*)]+[\\s]*<=(?!.*\\s(THEN|GENERATE)(\\s|$)))",
         "([\\w\\\\\\(\\)\\+\\-'(?:,\\s*)]+[\\s]*:=)",
         "FOR\\s+[\\w\\s,]+:\\s*\\w+\\s+USE",
         "REPORT"
