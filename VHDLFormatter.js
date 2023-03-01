@@ -563,7 +563,7 @@ function AlignSign_(result, startIndex, endIndex, symbol, mode) {
             regex = new RegExp("(:\\s*)(IN|OUT|INOUT|BUFFER)(\\s+)(\\w)");
         }
         else {
-            regex = new RegExp("([\\s\\w\\\\\\(\\)',]|^)" + symbol + "([\\s\\w\\\\\\(\\)',]|$)");
+            regex = new RegExp("([\\s\\w\\\\\\(\\)',\\.]|^)" + symbol + "([\\s\\w\\\\\\(\\)',\\.]|$)");
         }
         let colonIndex;
         if (symbol == "direction") {
@@ -709,7 +709,7 @@ function beautifySemicolonBlock(block, result, settings, indent) {
 exports.beautifySemicolonBlock = beautifySemicolonBlock;
 function alignSignalAssignmentBlock(settings, inputs, startIndex, endIndex, result) {
     if (settings.Indentation.replace(/ +/g, "").length == 0) {
-        let reg = new RegExp("^([\\w\\\\\\(\\)\\+\\-'(?:,\\s*)]+[\\s]*(?:<=|:=)\\s*)");
+        let reg = new RegExp("^([\\w\\\\\\(\\)\\+\\-'(?:,\\s*)\\.]+[\\s]*(?:<=|:=)\\s*)");
         let match = reg.exec(inputs[startIndex]);
         if (match != null) {
             let length = match[0].length;
@@ -750,8 +750,8 @@ function beautify3(block, result, settings, indent) {
     let indentedEndsKeyWords = [ILIndentedReturnPrefix + "RETURN\\s+\\w+;"];
     let blockEndsWithSemicolon = [
         "(WITH\\s+[\\w\\s\\\\]+SELECT)",
-        "([\\w\\\\\\\(\\)\\+\\-'(?:,\\s*)]+[\\s]*<=(?!.*\\s(THEN|GENERATE)(\\s|$)))",
-        "([\\w\\\\\\(\\)\\+\\-'(?:,\\s*)]+[\\s]*:=)",
+        "([\\w\\\\\\\(\\)\\+\\-'\\.(?:,\\s*)]+[\\s]*<=(?!.*\\s(THEN|GENERATE)(\\s|$)))",
+        "([\\w\\\\\\(\\)\\+\\-'\\.(?:,\\s*)]+[\\s]*:=)",
         "FOR\\s+[\\w\\s,]+:\\s*\\w+\\s+USE",
         "REPORT"
     ];
