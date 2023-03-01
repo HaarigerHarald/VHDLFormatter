@@ -796,7 +796,7 @@ export function beautifySemicolonBlock(block: CodeBlock, result: (FormattedLine 
 
 function alignSignalAssignmentBlock(settings: BeautifierSettings, inputs: string[], startIndex: number, endIndex: number, result: (FormattedLine | FormattedLine[])[]) {
     if (settings.Indentation.replace(/ +/g, "").length == 0) {
-        let reg: RegExp = new RegExp("^([\\w\\\\\\(\\)\\+\\-'(?:,\\s*)\\.]+[\\s]*(?:<=|:=)\\s*)");
+        let reg: RegExp = new RegExp("^([\\w\\\\\\(\\)\\+\\-'(?:,\\s*)\\.]+[\\s]*(?:<=|:=)(?!\\s\\(|\\()\\s*)");
         let match = reg.exec(inputs[startIndex]);
         if (match != null) {
             let length = match[0].length;
