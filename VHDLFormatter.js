@@ -709,7 +709,7 @@ function beautifySemicolonBlock(block, result, settings, indent) {
 exports.beautifySemicolonBlock = beautifySemicolonBlock;
 function alignSignalAssignmentBlock(settings, inputs, startIndex, endIndex, result) {
     if (settings.Indentation.replace(/ +/g, "").length == 0) {
-        let reg = new RegExp("^([\\w\\\\\\(\\)\\+\\-'(?:,\\s*)\\.]+[\\s]*(?:<=|:=)(?!\\s\\(|\\()\\s*)");
+        let reg = new RegExp("^([\\w\\\\\\(\\)\\+\\-'(?:,\\s*)\\.]+[\\s]*(?:<=|:=)(?!\\s\\($|\\($)\\s*)");
         let match = reg.exec(inputs[startIndex]);
         if (match != null) {
             let length = match[0].length;
