@@ -103,7 +103,7 @@ String.prototype.regexLastIndexOf = function (pattern, startIndex) {
     const stringToWorkWith = this.substring(0, startIndex + 1);
     let lastIndexOf = -1;
     let nextStop = 0;
-    let result: RegExpExecArray;
+    let result: RegExpExecArray | null;
     while ((result = pattern.exec(stringToWorkWith)) != null) {
         lastIndexOf = result.index;
         pattern.lastIndex = ++nextStop;
@@ -127,7 +127,7 @@ Array.prototype.convertToRegexBlockWords = function (): RegExp {
 }
 
 function EscapeComments(arr: Array<string>): Array<string> {
-    var comments = [];
+    var comments : string[] = [];
     var count = 0;
     for (var i = 0; i < arr.length; i++) {
         var line = arr[i];
@@ -250,7 +250,7 @@ export function SetNewLinesAfterSymbols(text: string, newLineSettings: NewLineSe
         newLineSettings.newLineAfter.forEach(symbol => {
             let upper = symbol.toUpperCase();
             var rexString = "(" + upper + ")[ ]?([^ \r\n@])";
-            let regex: RegExp = null;
+            let regex: RegExp | null = null;
             if (upper.regexStartsWith(/\w/)) {
                 regex = new RegExp("\\b" + rexString, "g");
             }
@@ -266,7 +266,7 @@ export function SetNewLinesAfterSymbols(text: string, newLineSettings: NewLineSe
     if (newLineSettings.noNewLineAfter != null) {
         newLineSettings.noNewLineAfter.forEach(symbol => {
             let rexString = "(" + symbol.toUpperCase() + ")[ \r\n]+([^@])";
-            let regex: RegExp = null;
+            let regex: RegExp | null = null;
             if (symbol.regexStartsWith(/\w/)) {
                 regex = new RegExp("\\b" + rexString, "g");
                 text = text.replace(regex, '$1 $2');
@@ -458,7 +458,7 @@ export class CodeBlock {
     start: number;        // index of first line of range
     end: number;          // index of last line of range
     cursor: number;       // line currently being processed
-    parent: CodeBlock;
+    parent: CodeBlock | null;
 
     constructor(lines: Array<string>, start = 0, end = lines.length - 1) {
         this.lines = lines;
