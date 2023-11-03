@@ -595,11 +595,11 @@ export function beautifyPortGenericBlock(block: CodeBlock, result: (FormattedLin
 
 export function AlignSigns(result: (FormattedLine | FormattedLine[])[], startIndex: number, endIndex: number, mode: string, alignComments: boolean = false) {
     AlignSign_(result, startIndex, endIndex, ":", mode);
+    AlignSign_(result, startIndex, endIndex, "direction", mode);
     AlignSign_(result, startIndex, endIndex, ":=", mode);
     AlignSign_(result, startIndex, endIndex, "<=", mode);
     AlignSign_(result, startIndex, endIndex, "=>", mode);
     AlignSign_(result, startIndex, endIndex, "<=", mode); // Another pass to align when a => b <= c
-    AlignSign_(result, startIndex, endIndex, "direction", mode);
     if (alignComments) {
         AlignSign_(result, startIndex, endIndex, "@_@comments", mode);
     }
