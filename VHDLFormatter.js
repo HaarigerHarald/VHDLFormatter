@@ -518,11 +518,11 @@ function beautifyPortGenericBlock(block, result, settings, indent, mode) {
 exports.beautifyPortGenericBlock = beautifyPortGenericBlock;
 function AlignSigns(result, startIndex, endIndex, mode, alignComments = false) {
     AlignSign_(result, startIndex, endIndex, ":", mode);
+    AlignSign_(result, startIndex, endIndex, "direction", mode);
     AlignSign_(result, startIndex, endIndex, ":=", mode);
     AlignSign_(result, startIndex, endIndex, "<=", mode);
     AlignSign_(result, startIndex, endIndex, "=>", mode);
     AlignSign_(result, startIndex, endIndex, "<=", mode); // Another pass to align when a => b <= c
-    AlignSign_(result, startIndex, endIndex, "direction", mode);
     if (alignComments) {
         AlignSign_(result, startIndex, endIndex, "@_@comments", mode);
     }
