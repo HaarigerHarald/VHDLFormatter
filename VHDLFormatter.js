@@ -331,6 +331,7 @@ function beautify(input, settings) {
     input = input.replace(/\)\s*(@_@\w+)\r\n\s*RETURN\s+([\w]+;)/g, ') $1\r\n' + ILIndentedReturnPrefix + 'RETURN $2'); //function(..)\r\nreturn type; -> function(..\r\n)return type;
     let keywordAndSignRegex = new RegExp("(\\b" + KeyWords.join("\\b|\\b") + "\\b) +([\\-+]) +([\\(\\w])", "g");
     input = input.replace(keywordAndSignRegex, "$1 $2$3"); // `WHEN - 2` -> `WHEN -2`
+    input = input.replace(/CASE +\?/g, 'CASE?'); // Fix broken `CASE ?` -> `CASE?` by previous step
     input = input.replace(/([,|>=<]) +([+\-]) +([\(\w])/g, '$1 $2$3'); // `1, - 2)` -> `1, -2)`
     input = input.replace(/([\("]) +([+\-]) +([\(\w])/g, '$1$2$3'); // `( - 2)` -> `(-2)`
     input = input.replace(/(\*) +([+\-]) +([\(\w])/g, '$1 $2$3'); // `* - 2` -> `* -2`
@@ -623,7 +624,7 @@ function AlignSign(result, startIndex, endIndex, symbol, maxSymbolIndex = -1, sy
 }
 exports.AlignSign = AlignSign;
 function beautifyCaseBlock(block, result, settings, indent) {
-    if (!block.lines[block.cursor].regexStartsWith(/(.+:\s*)?(CASE)([\s]|$)/)) {
+    if (!block.lines[block.cursor].regexStartsWith(/(.+:\s*)?(CASE\?|CASE)([\s]|$)/)) {
         return;
     }
     result.push(new FormattedLine(block.lines[block.cursor], indent));
@@ -822,7 +823,7 @@ function beautify3(block, result, settings, indent) {
             Mode = modeCache;
             continue;
         }
-        if (input.regexStartsWith(/(.+:\s*)?(CASE)([\s]|$)/)) {
+        if (input.regexStartsWith(/(.+:\s*)?(CASE\?|CASE)([\s]|$)/)) {
             let modeCache = Mode;
             Mode = FormatMode.CaseWhen;
             beautifyCaseBlock(block, result, settings, indent);
