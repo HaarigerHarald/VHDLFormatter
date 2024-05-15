@@ -725,7 +725,7 @@ function alignSignalAssignmentBlock(settings, inputs, startIndex, endIndex, resu
 }
 function beautify3(block, result, settings, indent) {
     let regexOneLineBlockKeyWords = new RegExp(/(PROCEDURE)[^\w](?!.+[^\w]IS([^\w]|$))/); //match PROCEDURE..; but not PROCEDURE .. IS;
-    let regexFunctionMultiLineBlockKeyWords = new RegExp(/(FUNCTION|IMPURE FUNCTION)[^\w](?=.+[^\w]IS([^\w]|$))/); //match FUNCTION .. IS; but not FUNCTION
+    let regexFunctionMultiLineBlockKeyWords = new RegExp(/(FUNCTION|IMPURE FUNCTION|PURE FUNCTION)[^\w](?=.+[^\w]IS([^\w]|$))/); //match FUNCTION .. IS; but not FUNCTION
     let blockMidKeyWords = ["BEGIN"];
     let blockStartsKeyWords = [
         "IF",
@@ -874,9 +874,10 @@ function beautify3(block, result, settings, indent) {
             }
             continue;
         }
-        if (input.regexStartsWith(/IMPURE FUNCTION[^\w]/)
+        if (input.regexStartsWith(/(IM)?PURE FUNCTION[^\w]/)
             && input.regexIndexOf(/[^\w]RETURN[^\w]/) < 0) {
-            beautifyPortGenericBlock(block, result, settings, indent, "IMPURE FUNCTION");
+            let pure_keyword = (input.regexStartsWith(/IMPURE/)) ? "IMPURE " : "PURE ";
+            beautifyPortGenericBlock(block, result, settings, indent, pure_keyword);
             if (!block.lines[block.cursor].regexStartsWith(regexBlockEndsKeyWords)) {
                 if (block.lines[block.cursor].regexStartsWith(regexBlockIndentedEndsKeyWords)) {
                     result[block.cursor].Indent++;
